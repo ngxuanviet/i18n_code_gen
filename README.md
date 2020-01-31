@@ -17,7 +17,8 @@ dependencies:
 ```
 dev_dependencies:  
   build_runner: ^1.7.3  
-  i18n_code_gen: ^1.0.0
+  i18n_code_gen:
+    git: https://gitlab.saobang.vn/fastgo/mobile/i18n_code_gen.git
 ```
 Tạo file ***build.yaml*** trong thư mục gốc của project:
 ```
