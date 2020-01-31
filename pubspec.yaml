@@ -1,0 +1,16 @@
+name: i18n_code_gen
+description: Gen multi language dart code for flutter.
+version: 1.0.0
+
+environment:
+  sdk: '>=2.7.0 <3.0.0'
+
+#dependencies:
+  build: ^1.2.2
+  path: ^1.6.0
+
+dev_dependencies:
+  build_config: ^0.4.1+1
+  build_runner: ^1.7.3
+  pedantic: ^1.8.0
+  test: ^1.6.0
