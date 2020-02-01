@@ -3,8 +3,8 @@
 Tự động tạo dart code từ file json ngôn ngữ xử lý vấn đề đa ngôn ngữ cho flutter
 
 #### Tính năng có thể phát triển tiếp:
-- Hỗ trợ format
 - Hỗ trợ vùng quốc gia
+- Cảnh báo thiếu phiên bản dịch hoặc thiếu string tại ngôn ngữ default
 
 ## Tích hợp:
 Thêm cấu hình trong file ***pubspec.yaml***:
@@ -40,7 +40,8 @@ Chạy lệnh packages get:  ```flutter pub get```
   "isDefault": true,
   "lang": "en",  
   "app_name": "Test App",  
-  "content": "Test auto gen language code"  
+  "content": "Test auto gen language code",
+  "two_parameters": "Test format string: $parameter1 and $parameter2"
 }
 ```
 "isDefault": true nếu là ngôn ngữ mặc định (yêu cầu phải có 1 ngôn ngữ là mặc định, các file json khác không cần định nghĩa trường này)
@@ -67,4 +68,10 @@ class MyApp extends StatelessWidget {
 ## Sử dụng trong code:
 ```
 Text(Strings.of(context).content) //text: 'Test auto gen language code'
+```
+
+## Sử dụng text có params (format):
+json ```"two_parameters": "Test format string: $parameter1 and $parameter2"```
+```
+Text(Strings.of(context).two_parameters('Tom', 'Jerry')) //text: 'Test format string: Tom and Jerry'
 ```
