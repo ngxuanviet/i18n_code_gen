@@ -18,12 +18,13 @@ class GenCodeBuilder implements Builder {
 
     //build string class
     String content;
-    for (var key in data.keys) {
-      content = content == null ? _genKey(key, data[key].toString()) : content + _genKey(key, data[key].toString());
-    }
 
     var defaultLang = data['isDefault'] ?? false;
     var currentLangCode = inputId.pathSegments[inputId.pathSegments.length - 1].replaceAll('.json', '');
+
+    for (var key in data.keys) {
+      content = content == null ? _genKey(key, data[key].toString(), !defaultLang) : content + _genKey(key, data[key].toString(), !defaultLang);
+    }
 
     if (defaultLang) {
       var languages = _listLanguageFromDir('lib/langs');
@@ -41,7 +42,6 @@ class GenCodeBuilder implements Builder {
     for (var fileOrDir in contents) {
       if (fileOrDir is File) {
         var fileName = getFileName(fileOrDir.path);
-        print('file: ' + fileOrDir.path);
         if (fileName.contains('.json')) {
           languages.add(fileName.replaceFirst('.json', ''));
         }
@@ -57,10 +57,25 @@ class GenCodeBuilder implements Builder {
     });
   }
 
-  String _genKey(String key, String value) {
-    return '''
-  String get $key => "$value";
-''';
+  String _genKey(String key, String value, bool isOverride) {
+    var buffer = StringBuffer();
+    if (isOverride) {
+      buffer.writeln('  @override');
+    }
+    final List<Match> matches = parameterRegExp.allMatches(value).toList();
+    if (matches.isNotEmpty) {
+      //có parameter...
+      //create fun
+      var params = createParametrized(value, matches);
+      buffer.write('''
+  String $key ($params) => '$value';
+''');
+    } else {
+      buffer.write('''
+  String get $key => '$value';
+''');
+    }
+    return buffer.toString();
   }
 
   String _genDefaultStrings(String package, String defaultLanguage, List<String> languages, String content) {
@@ -85,7 +100,6 @@ import 'package:$package/langs/$fileName.dart';
 ''';
     }
     return '''
-// ignore_for_file: non_constant_identifier_names
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 $import
@@ -235,4 +249,25 @@ String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
 String getFileName(String path) {
   return path?.split('/')?.last?.split('\\')?.last;
+}
+
+final RegExp parameterRegExp = RegExp(r'(?<!\\)\$\{?(.+?\b)\}?');
+
+String createParametrized(String value, List<Match> matches) {
+  var buffer = StringBuffer();
+  for (var i = 0; i < matches.length; i++) {
+    var parameter = normalizeParameter(matches[i].group(0));
+    buffer.write('String $parameter');
+    if(i < matches.length - 1) {
+      buffer.write(', ');
+    }
+  }
+  return buffer.toString();
+}
+
+String normalizeParameter(String parameter) {
+  return parameter //
+      .replaceAll(r'$', '')
+      .replaceAll(r'{', '')
+      .replaceAll(r'}', '');
 }
