@@ -57,7 +57,8 @@ class GenCodeBuilder implements Builder {
     });
   }
 
-  String _genKey(String key, String value, bool isOverride) {
+  String _genKey(String key, String input, bool isOverride) {
+    var value = input.replaceAll('\n', '\\n');
     var buffer = StringBuffer();
     if (isOverride) {
       buffer.writeln('  @override');
